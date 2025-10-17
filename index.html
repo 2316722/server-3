@@ -9,8 +9,8 @@
 
   <body v-scope="dataset()">
     <p>
-      <input type="file" accept=".png, .jpg, .jpeg" />
-      <figure v-if="data"><img height="200" :src="data" /></figure>
+      <input type="file" accept=".png, .jpg, .jpeg" @change="loadImage" />
+      <figure><img height="200" :src="data" /></figure>
       <!-- プレビュー用（JSONのみ） -->
     </p>
     <p>
@@ -19,9 +19,24 @@
   </body>
 
   <script>
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      document.querySelector('img').src = reader.result;
+    });
     function dataset() {
       return {
         data: false,
+
+        loadImage() {
+          const file = document.querySelector('input').files[0];
+          if (!file) {
+            window.alert('画像を選択してください');
+            return;
+          }
+          reader.readAsDataURL(file);
+          this.data = reader.result;
+        },
+
         async fetchData() {
           const file = document.querySelector('input').files[0];
           if (!file) {
